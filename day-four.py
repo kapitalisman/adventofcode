@@ -26,7 +26,7 @@ print(lines)
 #--- Part Two ---
 
 def overlap(line: str) -> bool:
-    min_one, max_one, min_two, max_two = map(int, re.split(',|-', line))
+    min_one, max_one, min_two, max_two = map(int, re.split(r',|-', line))
     if not (max_one < min_two or max_two < min_one):
         return True
     return False
