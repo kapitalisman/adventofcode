@@ -1,8 +1,14 @@
-#--- Day 2: Rock Paper Scissors ---
+from aocd import data, submit
+lines = data.splitlines()
 
-score = 0
+def score(func):
+    score = 0
+    for line in lines:
+        points = func(line)
+        score += points
+    return score
 
-def process(line):
+def p1(line):
     match line:
         case "A X":
             return 3 + 1
@@ -23,21 +29,7 @@ def process(line):
         case "C Z":
             return 3 + 3
 
-f = open('./input/day-two.txt', 'r')
-for line in f:
-    line = line.replace('\n', '')
-    if line == '':
-        continue
-    points = process(line)
-    score += points
-
-print(score)
-
-#--- Part Two ---
-
-new_score = 0
-
-def new_process(line):
+def p2(line):
     match line:
         case "A X":
             return 0 + 3
@@ -58,12 +50,5 @@ def new_process(line):
         case "C Z":
             return 6 + 1
 
-f = open('./input/day-two.txt', 'r')
-for line in f:
-    line = line.replace('\n', '')
-    if line == '':
-        continue
-    points = new_process(line)
-    new_score += points
-
-print(new_score)
+submit(score(p1)) #p1
+submit(score(p2)) #p2
