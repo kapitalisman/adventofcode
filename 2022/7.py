@@ -1,9 +1,9 @@
 from aocd import data, submit
 lines = data.splitlines()
 
-path = '' # keep track of current path
-dirs = set() # all directories in tree
-files = {} # full path -> size of file
+path = ''  # keep track of current path
+dirs = set()  # all directories in tree
+files = {}  # full path -> size of file
 
 for line in lines:
     if line == '$ cd ..':
@@ -19,7 +19,7 @@ for line in lines:
         size, name = line.split(' ')
         files[path + '/' + name] = int(size)
 
-dirsizes = {} # full path -> size of dir
+dirsizes = {}  # full path -> size of dir
 
 for dir in dirs:
     for full_path, file_size in files.items():
@@ -32,7 +32,7 @@ for dir in dirs:
 p1 = sum(size for size in dirsizes.values() if size <= 100000)
 submit(p1)
 
-used = dirsizes['//'] # root
+used = dirsizes['//']  # root
 free = 70e6 - used
 need = 30e6 - free
 

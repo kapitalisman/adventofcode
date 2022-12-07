@@ -1,12 +1,14 @@
 from aocd import data, submit
 lines = data.splitlines()
 
+
 def score(func):
     score = 0
     for line in lines:
         points = func(line)
         score += points
     return score
+
 
 def p1(line):
     match line:
@@ -29,6 +31,7 @@ def p1(line):
         case "C Z":
             return 3 + 3
 
+
 def p2(line):
     match line:
         case "A X":
@@ -50,5 +53,6 @@ def p2(line):
         case "C Z":
             return 6 + 1
 
-submit(score(p1)) #p1
-submit(score(p2)) #p2
+
+submit(score(p1))  # p1
+submit(score(p2))  # p2
