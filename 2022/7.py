@@ -1,28 +1,26 @@
-from aocd import data, numbers, submit
+from aocd import data, submit
 lines = data.splitlines()
 
-files = {}
-dirs = set()
-path = ''
+path = '' # keep track of current path
+dirs = set() # all directories in tree
+files = {} # full path -> size of file
 
 for line in lines:
-    if line[0] == '$':
-        if line == '$ cd ..':
-            path = path.rsplit('/', 1)[0]
-            continue
-        if '$ cd' in line:
-            folder = line.split(' ')[-1]
-            if folder != '/':
-                path += '/' + folder
-                dirs.add(path)
+    if line == '$ cd ..':
+        path = path.rsplit('/', 1)[0]
+        continue
+    if '$ cd' in line:
+        folder = line.split(' ')[-1]
+        path += '/' + folder
+        dirs.add(path)
+    elif line[:4] in ['$ ls', 'dir ']:
+        continue
     else:
-        if line[:3] == 'dir':
-            continue
-        else:
-            size, name = line.split(' ')
-            files[path + '/' + name] = int(size)
+        size, name = line.split(' ')
+        files[path + '/' + name] = int(size)
 
-dirsizes = {}
+dirsizes = {} # full path -> size of dir
+
 for dir in dirs:
     for full_path, file_size in files.items():
         if (dir) in full_path:
@@ -34,7 +32,7 @@ for dir in dirs:
 p1 = sum(size for size in dirsizes.values() if size <= 100000)
 submit(p1)
 
-used = sum(numbers)
+used = dirsizes['//'] # root
 free = 70e6 - used
 need = 30e6 - free
 
