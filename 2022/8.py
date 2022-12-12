@@ -1,6 +1,6 @@
 import math
 from aocd import data, numbers, submit
-lines = list(map(str, data.splitlines()))
+lines = data.splitlines()
 
 grid = [[int(x) for x in line] for line in lines]
 x, y = len(grid), len(grid[0])

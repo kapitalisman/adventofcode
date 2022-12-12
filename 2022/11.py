@@ -3,7 +3,7 @@ import math
 import re
 
 from aocd import data, numbers, submit
-lines = list(map(str, data.splitlines()))
+lines = data.splitlines()
 
 input = data.split('\n\n')
 monkeys = len(input)

@@ -1,5 +1,5 @@
 from aocd import data, numbers, submit
-lines = list(map(str, data.splitlines()))
+lines = data.splitlines()
 
 hx, hy, tx, ty = [0] * 4
 p1 = set()

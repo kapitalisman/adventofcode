@@ -1,5 +1,5 @@
 from aocd import data, numbers, submit
-lines = list(map(str, data.splitlines()))
+lines = data.splitlines()
 
 t = 0
 x = 1
