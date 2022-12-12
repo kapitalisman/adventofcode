@@ -23,9 +23,7 @@ for monkey in input:
     monkt.append(int(d.split()[-1]))
     monkf.append(int(e.split()[-1]))
 
-
-p1 = [0] * monkeys
-p2 = [0] * monkeys
+p1, p2 = [[0] * monkeys for _ in [1, 2]]
 
 # process rounds
 lcm = math.lcm(*divby)
@@ -34,8 +32,9 @@ for idx, p in enumerate([p1, p2], start=1):
     for _ in range(20 if idx == 1 else 10000):
         for i in range(monkeys):
             for item in items[i]:
-                item = newop[i](item)
-                item = item // 3 if idx == 1 else item % lcm
+                item = newop[i](item) % lcm
+                if idx == 1:
+                    item //= 3
                 j = monkt[i] if item % divby[i] == 0 else monkf[i]
                 items[j].append(item)
             p[i] += len(items[i])
