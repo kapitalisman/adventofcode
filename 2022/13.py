@@ -3,72 +3,61 @@ import copy
 import math
 import re
 import functools
-
+import json
 from aocd import data, submit
-pairs = data.split('\n\n')
 
 
-def compare(l, r):
-    if len(l) == 0 and len(r) != 0:
-        return True
-    if len(r) == 0 and len(l) != 0:
-        return False
-    for i in range(len(l)):
-        if i >= len(r):
-            return False
-        if isinstance(l[i], list) and isinstance(r[i], list):
-            result = compare(l[i], r[i])
-            if result is None:
-                continue
-            return result
-        if isinstance(l[i], int) and isinstance(r[i], list):
-            result = compare([l[i]], r[i])
-            if result is None:
-                continue
-            return result
-        if isinstance(l[i], list) and isinstance(r[i], int):
-            result = compare(l[i], [r[i]])
-            if result is None:
-                continue
-            return result
-        if isinstance(l[i], int) and isinstance(r[i], int):
-            if l[i] < r[i]:
-                return True
-            if l[i] > r[i]:
-                return False
-            continue
-    if len(r) > len(l):
-        return True
+def cmp(left, right):
+    if type(left) == int:
+        if type(right) == int:
+            return left - right
+        return cmp([left], right)
+
+    if type(right) == int:
+        return cmp(left, [right])
+
+    for a, b in zip(left, right):
+        if res := cmp(a, b):
+            return res
+
+    return len(left) - len(right)
 
 
-results = []
-for idx, pair in enumerate(pairs):
-    l, r = pair.splitlines()
-    l = eval(l)
-    r = eval(r)
-    result = compare(l, r)
-    results.append((idx + 1, result))
+# part 1
+pairs = map(str.splitlines, data.split("\n\n"))
+p1 = 0
+for idx, [left, right] in enumerate(pairs, start=1):
+    if cmp(json.loads(left), json.loads(right)) < 0:
+        p1 += idx
 
-print(sum(x[0] for x in results if x[1] == True))
-
-# part 2
-packets = [[[2]], [[6]]]
-for pair in pairs:
-    l, r = pair.splitlines()
-    packets.append(eval(l))
-    packets.append(eval(r))
+print(p1)
 
 
-def rang(a, b):
-    result = compare(a, b)
-    return -1 if result else 1
+# part 2 - method 1
+d2 = 1
+d6 = 2
+
+packets = map(json.loads, data.split())
+for packet in packets:
+    if cmp(packet, [[2]]) < 0:
+        d2 += 1
+        d6 += 1
+    elif cmp(packet, [[6]]) < 0:
+        d6 += 1
+
+print(p2 := d2 * d6)
 
 
-sorted_packets = sorted(packets, key=functools.cmp_to_key(rang))
+# part 2 - method 2
+dividers = ([[2]], [[6]])
+packets = list(map(json.loads, data.split()))
+packets.extend(dividers)
 
-key = 1
-for loc, packet in enumerate(sorted_packets):
+sorted_packets = sorted(packets, key=functools.cmp_to_key(cmp))
+
+p2 = 1
+for idx, packet in enumerate(sorted_packets, start=1):
     if packet == [[2]] or packet == [[6]]:
-        key *= (loc + 1)
+        p2 *= idx
 
-print(key)
+print(p2)
