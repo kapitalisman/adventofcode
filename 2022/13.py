@@ -33,31 +33,29 @@ for idx, [left, right] in enumerate(pairs, start=1):
 print(p1)
 
 
-# part 2 - method 1
+# part 2
+dividers = ([[2]], [[6]])
+
+# method 1
 d2 = 1
 d6 = 2
 
 packets = map(json.loads, data.split())
 for packet in packets:
-    if cmp(packet, [[2]]) < 0:
+    if cmp(packet, dividers[0]) < 0:
         d2 += 1
         d6 += 1
-    elif cmp(packet, [[6]]) < 0:
+    elif cmp(packet, dividers[1]) < 0:
         d6 += 1
 
 print(p2 := d2 * d6)
 
 
-# part 2 - method 2
-dividers = ([[2]], [[6]])
+# method 2
 packets = list(map(json.loads, data.split()))
 packets.extend(dividers)
+packets.sort(key=functools.cmp_to_key(cmp))
+d2 = packets.index(dividers[0]) + 1
+d6 = packets.index(dividers[1]) + 1
 
-sorted_packets = sorted(packets, key=functools.cmp_to_key(cmp))
-
-p2 = 1
-for idx, packet in enumerate(sorted_packets, start=1):
-    if packet == [[2]] or packet == [[6]]:
-        p2 *= idx
-
-print(p2)
+print(p2 := d2 * d6)
