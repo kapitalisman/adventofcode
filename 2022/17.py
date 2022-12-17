@@ -8,84 +8,73 @@ import json
 
 from aocd import data, submit, numbers
 
+jet_pattern = [-1 if jet == '<' else 1 for jet in list(data)]
 
-def clamp(n, smallest, largest): return max(smallest, min(n, largest))
-
-
-def intersection_is_empty(a: set, b: set):
-    return a.intersection(b) == set()
-
-
-jet_pattern = list(data)
-mod = len(jet_pattern)
-
-A = ['####']
-B = ['.#.', '###', '.#.']
-C = ['###', '..#', '..#']
-D = ['#', '#', '#', '#']
-E = ['##', '##']
+A = [0, 1, 2, 3]                     # ['####']
+B = [1, 1j, 1 + 1j, 2 + 1j, 1 + 2j]  # ['.#.', '###', '.#.']
+C = [0, 1, 2, 2 + 1j, 2 + 2j]        # ['###', '..#', '..#']
+D = [0, 1j, 2j, 3j]                  # ['#', '#', '#', '#']
+E = [0, 1, 1j, 1 + 1j]               # ['##', '##']
 
 blocks = [A, B, C, D, E]
 
-grid = set()
-for i in range(7):
-    grid.add((i, 0))  # floor
 
-for i in range(10000):
-    grid.add((-1, i))  # left wall
-    grid.add((7, i))  # right wall
+def get_state(chamber):
+    peaks = [0] * 7
+    for cell in chamber:
+        x = int(cell.real)
+        y = int(cell.imag)
+        peaks[x] = max(peaks[x], y)
+    lowest = min(peaks)
+    return tuple(peak - lowest for peak in peaks)
 
-p = 0
-for k in range(2022):
-    # current height
-    t = max([j[1] for j in grid if 0 <= j[0] <= 6])
-    # new block
-    block = blocks[k % 5]
-    w = len(block[0])
-    h = len(block)
-    x1 = 2
-    y1 = t + 4
 
-    # jet push
-    jet = jet_pattern[p % mod]
-    p += 1
-    shift = -1 if jet == '<' else 1
-    x1 += shift
-
-    while True:
-        # can move down?
-        temp = set()
-        for x in range(w):
-            for y in range(h):
-                if block[y][x] == '#':
-                    temp.add((x1 + x, y1 + y - 1))
-        if intersection_is_empty(grid, temp):
-            # can move
-            y1 -= 1
+def height(n):
+    # init
+    grid = {x - 1j for x in range(7)}
+    k = -1  # block count
+    new_block = True
+    states = {}
+    delta_t = 0
+    # loop
+    while k < n:
+        for idx, shift in enumerate(jet_pattern):
+            if new_block:
+                # current height
+                t = int(max(j.imag for j in grid)) + 1
+                k += 1
+                if k == n:
+                    break
+                # store state of grid
+                s = (idx, k % 5, get_state(grid))
+                if s in states:
+                    k_prev, t_prev = states[s]
+                    cycle = (n - k) // (delta_k := k - k_prev)
+                    delta_t = cycle * (t - t_prev)
+                    k += cycle * delta_k
+                    states = {}
+                else:
+                    states[s] = (k, t)
+                # new block
+                new_block = False
+                block = {x + 2 + (t + 3) * 1j for x in blocks[k % 5]}
 
             # jet push
-            jet = jet_pattern[p % mod]
-            p += 1
-            shift = -1 if jet == '<' else 1
-            temp = set()
-            for x in range(w):
-                for y in range(h):
-                    if block[y][x] == '#':
-                        temp.add((x1 + x + shift, y1 + y))
-            if intersection_is_empty(grid, temp):
-                # can shift
-                x1 += shift
+            shifted = {x + shift for x in block}
+            if any(x.real < 0 or x.real > 6 for x in shifted) or shifted & grid:
+                pass
             else:
-                continue  # moving down
+                block = shifted
+            # move down
+            shifted = {x - 1j for x in block}
+            if shifted & grid:
+                grid |= block
+                new_block = True
+            else:
+                block = shifted
 
-        else:  # block has stopped
-            for x in range(w):
-                for y in range(h):
-                    if block[y][x] == '#':
-                        pos = (x1 + x, y1 + y)
-                        grid.add(pos)
-            # next block
-            break
+    return t + delta_t
 
-t = max([j[1] for j in grid if 0 <= j[0] <= 6])
-print(t)
+
+print(p1 := height(2022))
+print(p2 := height(1000000000000))
