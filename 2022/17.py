@@ -77,4 +77,4 @@ def height(n):
 
 
 print(p1 := height(2022))
-print(p2 := height(1000000000000))
+print(p2 := height(1_000_000_000_000))
