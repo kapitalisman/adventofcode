@@ -6,7 +6,7 @@ lines = data.splitlines()
 
 valves_start = dict()
 for line in lines:
-    key = line[6:8]
+    key = line.split()[1]
     rate = int(line.split('=')[1].split(';')[0])
     tunnels = [x[-2:] for x in line.split(', ')]
     closed = True
@@ -43,8 +43,8 @@ def monte_carlo():
     return release
 
 
-results = set()
+p1 = 0
 for _ in range(1_000_000):
-    results.add(monte_carlo())
+    p1 = max(p1, monte_carlo())
 
-print(p1 := max(results))
+print(p1)
