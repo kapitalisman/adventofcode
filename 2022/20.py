@@ -4,42 +4,28 @@ import copy
 
 from aocd import data, submit, numbers
 
-init = numbers
-mod = len(init) - 1
-
 
 def solve(p):
-    key = 1 if p == 1 else 811589153
-    start = [num * key for num in init]
-    file = [(idx, num * key) for idx, num in enumerate(init)]
+    key = 811589153 if p == 2 else 1
+    start = [num * key for num in numbers]
+    file = [(idx, num) for idx, num in enumerate(start)]
+    mod = len(file)
 
-    t = 1 if p == 1 else 10
-    for _ in range(t):
+    for _ in range(10 if p == 2 else 1):
         for idx, num in enumerate(start):
-            # don't move zero, but store for later use
             if num == 0:
                 zero = (idx, num)
                 continue
-
-            # get index of current number to move
             old = file.index((idx, num))
+            new = (old + num) % (mod - 1)
+            file.insert(new, file.pop(old))
 
-            # get index of oldition to move to
-            new = old + num
-
-            # if new is front move to the end
-            if new == 0:
-                file.append(file.pop(old))
-                continue
-
-            file.insert(new % mod, file.pop(old))
-
-    index = file.index(zero)
-    ans = 0
+    z = file.index(zero)
+    t = 0
     for i in [1000, 2000, 3000]:
-        ans += file[(index + i) % len(init)][1]
+        t += file[(z + i) % mod][1]
 
-    return ans
+    return t
 
 
 print(p1 := solve(1))
