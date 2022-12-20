@@ -5,7 +5,7 @@ import copy
 from aocd import data, submit, numbers
 
 init = numbers
-length = len(init)
+mod = len(init) - 1
 
 
 def solve(p):
@@ -22,35 +22,24 @@ def solve(p):
                 continue
 
             # get index of current number to move
-            pos = file.index((idx, num))
+            old = file.index((idx, num))
 
-            new = pos + num
+            # get index of oldition to move to
+            new = old + num
 
-            if abs(new) >= length:
-                new = new % (length - 1)
-                file.insert(new, file.pop(pos))
-                continue
-
+            # if new is front move to the end
             if new == 0:
-                file.append(file.pop(pos))
+                file.append(file.pop(old))
                 continue
 
-            if new == length - 1:
-                file.insert(0, file.pop(pos))
-                continue
-
-            if new < 0:
-                file.insert(new, file.pop(pos))
-                continue
-
-            file.insert(new, file.pop(pos))
+            file.insert(new % mod, file.pop(old))
 
     index = file.index(zero)
-    _, th1 = file[(index + 1000) % len(init)]
-    _, th2 = file[(index + 2000) % len(init)]
-    _, th3 = file[(index + 3000) % len(init)]
+    ans = 0
+    for i in [1000, 2000, 3000]:
+        ans += file[(index + i) % len(init)][1]
 
-    return th1 + th2 + th3
+    return ans
 
 
 print(p1 := solve(1))
