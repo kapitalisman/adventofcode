@@ -1,20 +1,6 @@
-import random
-import copy
 from collections import deque
 
 from aocd import data, submit, numbers
-
-data = '''Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
-Valve BB has flow rate=13; tunnels lead to valves CC, AA
-Valve CC has flow rate=2; tunnels lead to valves DD, BB
-Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
-Valve EE has flow rate=3; tunnels lead to valves FF, DD
-Valve FF has flow rate=0; tunnels lead to valves EE, GG
-Valve GG has flow rate=0; tunnels lead to valves FF, HH
-Valve HH has flow rate=22; tunnel leads to valve GG
-Valve II has flow rate=0; tunnels lead to valves AA, JJ
-Valve JJ has flow rate=21; tunnel leads to valve II'''
-
 lines = data.splitlines()
 
 # process lines
@@ -28,10 +14,10 @@ for line in lines:
     tunnels[valve] = targets
 
 # simplify valves/tunnels system
-distance = {}  # stores distance from valve with rate = 0 to every other valve with rate > 0
+distance = {}
 for valve in valves:
     # skip valves with rate > 0
-    if valves[valve]:
+    if valve != 'AA' and not valves[valve]:
         continue
 
     # add self (avoid KeyError)
@@ -56,4 +42,43 @@ for valve in valves:
     # delete self
     del distance[valve][valve]
 
-print(distance)
+
+bits = {valve: idx for idx, valve in enumerate({valve: dist for valve, dist in distance.items() if valve != 'AA'})}
+
+
+def explore_paths(valve, time, open):
+    state = (valve, time, open)
+    if state in states:
+        return states[state]
+
+    release = 0
+    for nb, d in distance[valve].items():
+        bit = 1 << bits[nb]
+        # if valve is already open
+        if open & bit:
+            continue
+        # if there is no time left
+        time_remaining = time - d
+        if time_remaining <= 1:
+            continue
+        # open the valve
+        time_remaining -= 1
+        # keep exploring
+        release = max(release, explore_paths(nb, time_remaining, open | bit) + valves[nb] * time_remaining)
+
+    states[state] = release
+    return release
+
+
+states = {}
+print(p1 := explore_paths('AA', 30, 0))
+
+
+states = {}
+m = (1 << len(bits))
+
+p2 = 0
+for i in range(m // 2):
+    p2 = max(p2, explore_paths('AA', 26, i) + explore_paths('AA', 26, m - i - 1))
+
+print(p2)
