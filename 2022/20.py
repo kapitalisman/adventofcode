@@ -7,25 +7,19 @@ from aocd import data, submit, numbers
 
 def solve(p):
     key = 811589153 if p == 2 else 1
-    start = [num * key for num in numbers]
-    file = [(idx, num) for idx, num in enumerate(start)]
+    base = [num * key for num in numbers]
+    zero = (base.index(0), 0)
+    file = [(idx, num) for idx, num in enumerate(base)]
     mod = len(file)
 
     for _ in range(10 if p == 2 else 1):
-        for idx, num in enumerate(start):
-            if num == 0:
-                zero = (idx, num)
-                continue
+        for idx, num in enumerate(base):
             old = file.index((idx, num))
             new = (old + num) % (mod - 1)
             file.insert(new, file.pop(old))
 
     z = file.index(zero)
-    t = 0
-    for i in [1000, 2000, 3000]:
-        t += file[(z + i) % mod][1]
-
-    return t
+    return sum([file[(z + i * 1000) % mod][1] for i in range(1, 4)])
 
 
 print(p1 := solve(1))
