@@ -26,13 +26,13 @@ def eval_right(a):
     return eval('jwcq()')
 
 
-def goal_seek(target, precision):
+def goal_seek(target, precision, func):
     lower = 0
     upper = 10_000_000_000_000
     threshold = precision
     while abs(threshold) >= precision:
         solve = (lower + upper) // 2
-        threshold = target - eval_right(solve)
+        threshold = target - func(solve)
 
         if threshold > 0:
             upper = solve
@@ -43,4 +43,4 @@ def goal_seek(target, precision):
 
 
 left = eval('swbn()')
-print(p2 := goal_seek(left, 0.01))
+print(p2 := goal_seek(left, 0.01, eval_right))
