@@ -2,21 +2,6 @@ import re
 
 from aocd import data, submit, numbers
 
-# data = '''        ...#
-#         .#..
-#         #...
-#         ....
-# ...#.......#
-# ........#...
-# ..#....#....
-# ..........#.
-#         ...#....
-#         .....#..
-#         .#......
-#         ......#.
-
-# 10R5L5R10L4R5L5'''
-
 board, steps = data.split('\n\n')
 rows = board.splitlines()
 
