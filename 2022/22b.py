@@ -111,6 +111,6 @@ for number, letter in steps:
         d *= -1j
     else:
         facing = d.imag + 2 if (d.real < 0 or d.imag < 0) else 0
-        p1 = 1000 * (s.imag + 1) + 4 * (s.real + 1) + facing
+        p2 = 1000 * (s.imag + 1) + 4 * (s.real + 1) + facing
 
-print(p1)
+print(p2)
